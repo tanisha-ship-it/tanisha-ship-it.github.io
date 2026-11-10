@@ -1,0 +1,1147 @@
+@import "tailwindcss";
+
+:root {
+  --ink: #333231;
+  --body: #666462;
+  --body-strong: #4a4846;
+  --faint: #a3a09d;
+  --surface: #f0ece6;
+  --page-bg: #fffdfa;
+  --accent: #3d3b3a;
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-body: var(--body);
+  --color-body-strong: var(--body-strong);
+  --color-faint: var(--faint);
+  --color-surface: var(--surface);
+  --color-accent: var(--accent);
+  --font-serif: var(--font-self-modern), ui-serif, Georgia, serif;
+  --font-sans: var(--font-inter-display), ui-sans-serif, system-ui, sans-serif;
+  --font-grotesk: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-dm-mono), ui-monospace, monospace;
+  --font-pixel: var(--font-myrtille), ui-monospace, monospace;
+  --font-mondwest: var(--font-mondwest), ui-serif, serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--page-bg, #fffdfa);
+  color: var(--body);
+  font-family: var(--font-sans);
+  font-weight: 300;
+}
+
+/* In the base layer so Tailwind size utilities (h-full, aspect-*, …) still win. */
+@layer base {
+  img,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* ---------- Type styles (names follow the original Framer text styles) ---------- */
+
+.t-display {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: var(--t-display-size, clamp(30px, 6.4vw, 44px));
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+.t-h {
+  font-family: var(--t-h-font, inherit);
+  font-weight: var(--t-h-weight, 500);
+  font-size: var(--t-h-size, 18px);
+  line-height: 1.4;
+  letter-spacing: var(--t-h-track, 0);
+  color: var(--ink);
+}
+
+.t-sub {
+  font-weight: 400;
+  font-size: var(--t-sub-size, 18px);
+  line-height: calc(var(--t-sub-size, 18px) * 1.3);
+  color: var(--ink);
+}
+
+.t-p {
+  font-weight: var(--t-body-weight, 400);
+  font-size: var(--t-body-size, 16px);
+  line-height: var(--t-body-lh, 25px);
+  letter-spacing: var(--t-body-track, 0);
+  color: var(--body);
+}
+
+.t-sm {
+  font-weight: var(--t-body-weight, 400);
+  font-size: calc(var(--t-body-size, 16px) - 2px);
+  line-height: calc(var(--t-body-lh, 25px) - 4px);
+  letter-spacing: var(--t-body-track, 0);
+  color: var(--body);
+}
+
+.t-eyebrow {
+  font-family: var(--font-grotesk);
+  font-weight: 400;
+  font-size: var(--eyebrow-size, 12px);
+  line-height: 1.4;
+  letter-spacing: var(--eyebrow-track, 0.08em);
+  text-transform: var(--eyebrow-case, uppercase);
+  color: var(--eyebrow-color, var(--accent));
+}
+
+.t-p strong,
+.t-sm strong,
+.t-sub strong {
+  font-weight: 500;
+}
+
+/* Lead-in labels like "| Why:" in TL;DR blocks */
+.lead {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.hl {
+  font-weight: 500;
+  color: var(--accent);
+}
+
+/* ---------- Case study layout ----------
+ * One reading column. Text, panels and media all start and end on the same
+ * two vertical lines (column left and right). Wider breakouts are centred on
+ * the column. Anything side by side uses an equal-column grid, never magic
+ * widths. Spacing comes from five tokens so every page has the same rhythm.
+ */
+
+.cs {
+  --cs-col: 830px;
+  --cs-gutter: 50px;
+  --cs-gap-section: 72px; /* between major sections */
+  --cs-gap-group: 48px; /* between steps inside one section */
+  --cs-gap-text: 12px; /* between text blocks */
+  --cs-gap-media: 16px; /* text <-> media */
+  --cs-gap-grid: 20px; /* between neighbouring media or columns */
+  --cs-pad: 24px; /* inside a panel */
+  --phone-w: 220px; /* every phone on every project is drawn this wide */
+  --cs-radius: 6px;
+  --cs-img-radius: 4px;
+  /* The page title is small and quiet, like the headings. */
+  --t-display-size: 24px;
+}
+
+.cs-shell {
+  display: grid;
+  grid-template-columns:
+    minmax(var(--cs-gutter), 1fr)
+    minmax(0, var(--cs-col))
+    minmax(var(--cs-gutter), 1fr);
+}
+
+.cs-main {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+}
+
+.cs-header {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding-top: 140px;
+}
+
+.cs-logo {
+  width: auto;
+  height: 72px;
+  align-self: flex-start;
+}
+
+.cs-meta {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px var(--cs-gap-grid);
+  margin-top: 4px;
+}
+
+.cs-meta dd {
+  margin-top: 8px;
+}
+
+.cs-hero {
+  margin-top: 48px;
+  padding: var(--frame-pad, var(--cs-pad));
+  border-radius: var(--cs-radius);
+  background: var(--frame-bg, var(--surface));
+}
+
+.cs-hero > img,
+.cs-hero > video {
+  display: block;
+  width: 100%;
+  border-radius: var(--cs-img-radius, 8px);
+}
+
+.cs-body {
+  padding: 96px 0 140px;
+}
+
+.cs-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cs-gap-section);
+  min-width: 0;
+}
+
+.cs-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cs-gap-group);
+}
+
+.cs-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cs-gap-text);
+  scroll-margin-top: 100px;
+}
+
+.cs-anchor {
+  scroll-margin-top: 100px;
+}
+
+/* Eyebrow, heading and lead-in sit closer than ordinary paragraphs. */
+.cs-section > .t-eyebrow {
+  margin-bottom: -4px;
+}
+
+.cs-section > :is(.t-h, .t-sub) + .t-p {
+  margin-top: -4px;
+}
+
+/* Media blocks: 32px from text, 20px from each other. */
+.cs-m {
+  margin-block: calc(var(--cs-gap-media) - var(--cs-gap-text));
+}
+
+.cs-m + .cs-m {
+  margin-top: calc(var(--cs-gap-grid) - var(--cs-gap-text) - (var(--cs-gap-media) - var(--cs-gap-text)));
+}
+
+.cs-frame {
+  width: 100%;
+  padding: var(--frame-pad, var(--cs-pad));
+  border-radius: var(--cs-radius);
+  background: var(--frame-bg, var(--surface));
+  overflow: clip;
+}
+
+.cs-frame > img,
+.cs-frame > video {
+  display: block;
+  width: 100%;
+  border-radius: var(--cs-img-radius, 8px);
+}
+
+.cs-bare {
+  width: 100%;
+  overflow: clip;
+  border-radius: var(--cs-radius);
+}
+
+.cs-bare > img,
+.cs-bare > video {
+  display: block;
+  width: 100%;
+}
+
+/* Equal columns: panels, screenshots and phone clips line up on these grid lines. */
+.cs-cols {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 2), minmax(0, 1fr));
+  gap: var(--cs-gap-grid);
+}
+
+.cs-cols[data-cols="3"] {
+  --cols: 3;
+}
+
+.cs-cols[data-cols="4"] {
+  --cols: 4;
+}
+
+/* Text beside media: two equal columns, vertically centred. */
+.cs-split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--cs-gap-section) var(--cs-gap-grid);
+  align-items: center;
+}
+
+.cs-split[data-align="start"] {
+  align-items: start;
+}
+
+.cs-split > * {
+  min-width: 0;
+}
+
+.cs-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cs-gap-text);
+}
+
+/* Cards in grids (principles, learnings, personas): same padding and radius everywhere. */
+.cs-card {
+  padding: var(--cs-pad);
+  border-radius: var(--cs-radius);
+  background: var(--frame-bg, var(--surface));
+  min-width: 0;
+}
+
+.cs-card[data-tint] {
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+}
+
+.cs-card[data-tall] {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 280px;
+}
+
+/* Phase header: a 138px illustration beside one flowing sentence (smaller on tablets and phones). */
+.cs-lead {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 24px;
+  align-items: center;
+}
+
+.cs-lead-media {
+  display: flex;
+  gap: 12px;
+}
+
+.cs-lead-media > img {
+  width: 138px;
+  height: 138px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.cs-lead h3 {
+  font-size: 20px;
+  line-height: 30px;
+}
+
+.cs-lead .hl {
+  font-weight: 400;
+}
+
+@media (max-width: 1099px) {
+  .cs-lead-media > img {
+    width: 112px;
+    height: 112px;
+  }
+}
+
+@media (max-width: 767px) {
+  .cs-lead {
+    gap: 16px;
+    align-items: start;
+  }
+
+  .cs-lead-media > img {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+  }
+
+  .cs-lead h3 {
+    font-size: 18px;
+    line-height: 27px;
+  }
+}
+
+/* Images of the same canvas height side by side: columns in proportion to their widths, so their contents match in scale. */
+.cs-pair {
+  display: grid;
+  gap: var(--cs-gap-grid);
+  align-items: start;
+}
+
+@media (max-width: 767px) {
+  /* Stacked: the narrower image keeps its proportional width so the scale still matches. */
+  .cs-pair {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .cs-pair > :last-child {
+    width: calc(100% * var(--b) / var(--a));
+    margin-inline: auto;
+  }
+}
+
+/* Figure with a hover link (e.g. the workflow chart). */
+.cs-linked {
+  position: relative;
+}
+
+.cs-linked-fade {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 24%;
+  min-height: 96px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 20px;
+  background: linear-gradient(180deg, rgba(168, 168, 168, 0) 0%, rgba(84, 84, 84, 0.4) 100%);
+  opacity: 0;
+  transition: opacity 0.4s cubic-bezier(0.34, 1.2, 0.64, 1);
+  pointer-events: none;
+}
+
+.cs-linked:hover .cs-linked-fade,
+.cs-linked:focus-within .cs-linked-fade {
+  opacity: 1;
+}
+
+.cs-linked-btn {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 46px;
+  padding-inline: 20px;
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  font-family: var(--font-grotesk);
+  font-size: 14px;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+@media (hover: none) {
+  .cs-linked-fade {
+    opacity: 1;
+  }
+}
+
+/* Phones: one device size and one look for every project. */
+.cs-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--cs-gap-grid);
+  padding-block: 32px;
+}
+
+.cs-device {
+  position: relative;
+  flex: none;
+  box-sizing: border-box;
+  width: var(--phone-w);
+  aspect-ratio: 9 / 19.5;
+  border: calc(var(--phone-w) * 0.036) solid #3b4864;
+  border-radius: calc(var(--phone-w) * 0.16);
+  background: #fff;
+  overflow: hidden;
+}
+
+.cs-device::after {
+  content: "";
+  position: absolute;
+  top: 2.2%;
+  left: 50%;
+  z-index: 1;
+  width: 30%;
+  height: 3.6%;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: #3b4864;
+}
+
+.cs-device > video,
+.cs-device > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0;
+}
+
+.cs-mock {
+  flex: none;
+  width: calc(var(--phone-w) / var(--k, 1));
+  max-width: 100%;
+}
+
+.cs-mock > video,
+.cs-mock > img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 0;
+  /* The clip's white background takes on the panel colour. */
+  mix-blend-mode: multiply;
+}
+
+/* Wide breakout for hero and key screens, centred on the column. */
+@media (min-width: 1360px) {
+  .cs-wide {
+    margin-inline: -100px;
+  }
+}
+
+@media (max-width: 1099px) {
+  .cs-header {
+    padding-top: 120px;
+  }
+}
+
+@media (max-width: 1099px) {
+  .cs {
+    --phone-w: 200px;
+  }
+}
+
+@media (max-width: 767px) {
+  .cs {
+    --phone-w: 180px;
+    --cs-gutter: 24px;
+    --cs-gap-section: 72px;
+    --cs-gap-group: 48px;
+    --cs-gap-media: 24px;
+    --cs-gap-grid: 12px;
+    --cs-pad: 16px;
+  }
+
+  .t-display {
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+
+  .cs-meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cs-body {
+    padding: 64px 0 100px;
+  }
+
+  .cs-split,
+  .cs-cols[data-stack="phone"] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cs-split {
+    gap: var(--cs-gap-media);
+  }
+}
+
+/* ---------- Scroll reveal ---------- */
+
+.reveal {
+  opacity: 0;
+  transform: translate(var(--reveal-x, 0px), var(--reveal-y, 150px));
+  transition:
+    opacity var(--reveal-d, 0.8s) var(--reveal-ease, cubic-bezier(0.22, 1, 0.36, 1)) var(--reveal-delay, 0s),
+    transform var(--reveal-d, 0.8s) var(--reveal-ease, cubic-bezier(0.22, 1, 0.36, 1)) var(--reveal-delay, 0s);
+}
+
+.reveal[data-shown="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ---------- Butterfly game (homepage hero) ---------- */
+
+@keyframes net-swoosh {
+  0% {
+    transform: translate(-30%, -30%) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translate(-30%, -30%) rotate(-30deg) scale(1.2);
+  }
+  100% {
+    transform: translate(-30%, -30%) rotate(0deg) scale(1);
+  }
+}
+
+@keyframes caught-flash {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -60%) scale(1.4);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -80%) scale(1);
+  }
+}
+
+.net-swoosh {
+  animation: net-swoosh 0.3s ease-out forwards;
+}
+
+.caught-flash {
+  animation: caught-flash 0.8s ease-out forwards;
+}
+
+/* ---------- Micro-animations ported from the Framer site ---------- */
+
+/* Page wipe: every page reveals upward from the bottom edge over 0.4s (Framer "wipe", angle 270). */
+@keyframes page-wipe {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.page-enter {
+  min-height: 100svh;
+  background: #fff; /* so the wipe covers the old page instead of showing through it */
+  animation: page-wipe 0.4s cubic-bezier(0.27, 0, 0.51, 1) backwards;
+}
+
+/* Home hero title fades in on load. */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Spring from the Framer appear effect (stiffness 258, damping 89, mass 1.1). */
+.hero-title {
+  animation: fade-in 2.085s linear(0.0, 0.1116, 0.24, 0.3504, 0.4448, 0.5254, 0.5943, 0.6533, 0.7036, 0.7467, 0.7835, 0.8149, 0.8418, 0.8648, 0.8844, 0.9012, 0.9156, 0.9278, 0.9383, 0.9473, 0.9549, 0.9615, 0.9671, 0.9719, 0.9759, 0.9794, 0.9824, 0.985, 0.9872, 0.989, 0.9906, 0.992, 0.9931, 0.9941, 0.995, 0.9957, 0.9963, 0.9969, 0.9973, 0.9977, 1) 0.1s backwards;
+}
+
+/* Case-study body: rises on page load with a spring (stiffness 400, damping 30). */
+@keyframes body-rise {
+  from {
+    opacity: 0;
+    transform: translateY(150px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.body-enter {
+  animation: body-rise 0.395s linear(0.0, 0.0177, 0.0638, 0.1297, 0.2079, 0.2928, 0.3797, 0.4651, 0.5467, 0.6226, 0.6917, 0.7535, 0.8078, 0.8546, 0.8943, 0.9273, 0.9544, 0.976, 0.9929, 1.0057, 1.0151, 1.0215, 1.0255, 1.0277, 1.0284, 1.0279, 1.0266, 1.0248, 1.0226, 1.0202, 1.0177, 1.0153, 1.013, 1.0108, 1.0088, 1.0071, 1.0055, 1.0042, 1.0031, 1.0021, 1) backwards;
+}
+
+/* Arrow on link buttons tips over on hover, like the Framer artifact button. */
+.btn-arrow {
+  transition: transform 0.4s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+a:hover > .btn-arrow {
+  transform: rotate(37deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter,
+  .hero-title {
+    animation: none;
+  }
+
+  .body-enter {
+    animation: none;
+  }
+}
+
+/* AI Framework: principle cards start piled up and spread out when they scroll into view. */
+@media (min-width: 1024px) {
+  .fly-card {
+    transition: transform 1s cubic-bezier(0.44, 0, 0.56, 1);
+  }
+
+  .fly[data-shown="false"] .fly-0 {
+    transform: translate(321px, -20px) rotate(-8deg);
+  }
+
+  .fly[data-shown="false"] .fly-1 {
+    transform: translate(7px, 161px) rotate(16deg);
+  }
+
+  .fly[data-shown="false"] .fly-2 {
+    transform: translate(-274px, -98px) rotate(2deg);
+  }
+
+  .fly-threads {
+    transition: opacity 0.6s ease 1s;
+  }
+
+  .fly[data-shown="false"] .fly-threads {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fly-card,
+  .fly-threads {
+    transition: none;
+  }
+}
+
+/* ---------- Top bar and contents panel ----------
+ * Same type and colours as the rest of the site (Inter Display light, ink and
+ * grey). The current page or section is shown by darker text plus a thin
+ * accent mark, not brackets or caps.
+ */
+
+.topbar {
+  background: color-mix(in srgb, var(--page-bg, #fff) 82%, transparent);
+  backdrop-filter: blur(12px);
+  font-size: 14px;
+  font-weight: 300;
+  letter-spacing: 0.03em;
+  color: var(--ink);
+}
+
+.topbar-link,
+.casenav-link,
+.casenav-top {
+  color: var(--faint);
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+
+.topbar-link:hover,
+.casenav-link:hover,
+.casenav-top:hover {
+  color: var(--ink);
+}
+
+.topbar-link[aria-current="page"] {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 8px;
+}
+
+.topbar-sheet {
+  background: rgba(255, 255, 255, 0.97);
+}
+
+/* Contents panel: a strip under the top bar on small screens, fixed in the margin on wide ones. */
+.casenav {
+  position: fixed;
+  top: 48px;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(12px);
+  font-size: 14px;
+  font-weight: 300;
+  letter-spacing: 0.03em;
+}
+
+.casenav-list {
+  display: flex;
+  gap: 24px;
+  height: 40px;
+  align-items: center;
+  padding-inline: 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.casenav-list::-webkit-scrollbar {
+  display: none;
+}
+
+.casenav-link[aria-current="true"] {
+  box-shadow: 0 1px 0 var(--accent);
+}
+
+.casenav-top {
+  display: none;
+}
+
+@media (min-width: 1240px) {
+  .casenav {
+    bottom: 0;
+    right: auto;
+    width: calc((100vw - 830px) / 2 - 24px);
+    min-width: 168px;
+    max-width: 320px;
+    background: transparent;
+    backdrop-filter: none;
+    pointer-events: none;
+  }
+
+  .casenav-list {
+    position: absolute;
+    top: 56px;
+    left: 32px;
+    right: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    height: auto;
+    padding: 0;
+    overflow: visible;
+    pointer-events: auto;
+  }
+
+  .casenav-link {
+    position: relative;
+    white-space: normal;
+    line-height: 1.4;
+    padding-left: 14px;
+  }
+
+  /* A small accent bar on the current section. */
+  .casenav-link[aria-current="true"] {
+    box-shadow: none;
+  }
+
+  .casenav-link[aria-current="true"]::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.15em;
+    bottom: 0.15em;
+    width: 2px;
+    border-radius: 1px;
+    background: var(--accent);
+  }
+
+  .casenav-top {
+    position: absolute;
+    bottom: 28px;
+    left: 32px;
+    display: block;
+    pointer-events: auto;
+  }
+}
+
+/* Room for the contents strip below the top bar on small screens. */
+@media (max-width: 1239px) {
+  .cs-header {
+    padding-top: 136px;
+  }
+}
+
+/* ---------- Next project block ---------- */
+
+.cs-next {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-bottom: 120px;
+}
+
+.cs-next-card {
+  position: relative;
+  display: block;
+  padding: 12px 12px 24px;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.05),
+    0 10px 30px -10px rgba(0, 0, 0, 0.12);
+  transition:
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.5s ease;
+}
+
+.cs-next-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.06),
+    0 18px 40px -12px rgba(0, 0, 0, 0.18);
+}
+
+.cs-next-media {
+  overflow: hidden;
+  border-radius: 14px;
+}
+
+.cs-next-media img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 828 / 366;
+  object-fit: cover;
+  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cs-next-card:hover .cs-next-media img {
+  transform: scale(1.03);
+}
+
+.cs-next-phone {
+  display: none !important;
+}
+
+.cs-next-text {
+  padding: 20px 8px 0;
+  text-align: center;
+}
+
+.cs-next-text h2 {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+.cs-next-text p {
+  margin-top: 6px;
+}
+
+.cs-next-go {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--ink);
+  transition: transform 0.4s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.cs-next-card:hover .cs-next-go {
+  transform: rotate(37deg);
+}
+
+.cs-next-back {
+  align-self: center;
+  color: var(--faint);
+  transition: color 0.2s;
+}
+
+.cs-next-back:hover {
+  color: var(--ink);
+}
+
+@media (max-width: 767px) {
+  .cs-next {
+    padding-bottom: 80px;
+  }
+
+  .cs-next-phone {
+    display: block !important;
+    aspect-ratio: auto !important;
+  }
+
+  .cs-next-wide {
+    display: none !important;
+  }
+
+  .cs-next-text h2 {
+    font-size: 20px;
+  }
+}
+
+/* ---------- Reading progress ---------- */
+
+.cs-progress {
+  position: fixed;
+  top: 47px;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  height: 2px;
+  pointer-events: none;
+}
+
+.cs-progress-bar {
+  height: 100%;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+/* ---------- Staggered entrance for the case-study header ---------- */
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Starts after the page wipe (0.4s), then each piece follows 90ms after the last. */
+.stagger {
+  animation: rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) calc(0.35s + var(--i, 0) * 90ms) backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stagger {
+    animation: none;
+  }
+}
+
+/* ---------- Hero loading: the panel holds its shape, then the media fades in ---------- */
+
+.cs-hero > img,
+.cs-hero > video {
+  opacity: 0;
+  transform: scale(1.02);
+  transition:
+    opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cs-hero > [data-ready="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+@keyframes hero-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* A soft sweep across the panel while its media is still loading. */
+.cs-hero:not(:has([data-ready="true"])) {
+  background: linear-gradient(100deg, var(--surface) 30%, #f1f1f0 50%, var(--surface) 70%) 0 0 / 200% 100%;
+  animation: hero-shimmer 1.6s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-hero > img,
+  .cs-hero > video {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .cs-hero:not(:has([data-ready="true"])) {
+    animation: none;
+  }
+}
+
+/* ---------- Page transitions (browser view transitions) ---------- */
+
+@keyframes vt-wipe {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* The old page stays put underneath while the new one wipes up over it. */
+::view-transition-old(.page-out) {
+  animation: none;
+}
+
+::view-transition-new(.page-in) {
+  animation: vt-wipe 0.4s cubic-bezier(0.27, 0, 0.51, 1) both;
+}
+
+/* Where view transitions run, the plain wipe is not needed. */
+@supports (view-transition-name: none) {
+  .page-enter {
+    animation: none;
+  }
+}
+
+/* Project moves (card -> case study): a gentle crossfade instead of the wipe. */
+@keyframes vt-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes vt-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+html[data-vt="project"] ::view-transition-new(.page-in) {
+  animation: vt-fade-in 0.5s ease 0.15s both;
+}
+
+html[data-vt="project"] ::view-transition-old(.page-out) {
+  animation: vt-fade-out 0.45s ease both;
+}
+
+
+/* In a project move the hero is already visible when the browser snapshots the new page. */
+html[data-vt="project"] .cs-hero.stagger {
+  animation: none;
+}
+
+html[data-vt="project"] .cs-hero > img,
+html[data-vt="project"] .cs-hero > video {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+
+html[data-vt="project"] .cs-hero:not(:has([data-ready="true"])) {
+  animation: none;
+}
+
+/* Home cards: scale is driven by scroll position in HomeScroll, so no transition here. */
+.home-card {
+  transform-origin: center;
+  backface-visibility: hidden;
+  transform: scale(0.5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-card {
+    transform: none;
+  }
+}
+
+/* The case-study title follows its own size control, also on phones. */
+.cs .t-display {
+  font-size: var(--t-display-size, 24px);
+  font-weight: 300;
+  line-height: 1.3;
+}
