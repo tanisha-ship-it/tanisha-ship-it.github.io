@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { DialRoot } from "dialkit";
+import DialHost from "@/components/DialHost";
 import "dialkit/styles.css";
 import Nav from "@/components/Nav";
 import SmoothScroll from "@/components/SmoothScroll";
@@ -88,8 +88,8 @@ export default function RootLayout({
         <SmoothScroll />
         <Nav />
         <main>{children}</main>
-        {/* Live design controls. DialKit hides itself in production builds. */}
-        <DialRoot />
+        {/* Live design controls: always on in development, ?dial=1 switches them on in the live site for you only. */}
+        <DialHost />
       </body>
     </html>
   );
