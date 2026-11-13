@@ -7,6 +7,7 @@ const CONFIG = {
   presets: {
     _collapsed: false,
     rachel: { type: "action", label: "Rachel Chen feel" },
+    christina: { type: "action", label: "Christina Raganit feel" },
     emmi: { type: "action", label: "Emmi Wu feel (current)" },
     old: { type: "action", label: "My old look" },
   },
@@ -29,7 +30,7 @@ const CONFIG = {
   },
   space: {
     _collapsed: true,
-    columnWidth: [830, 520, 900, 2],
+    columnWidth: [830, 520, 960, 1],
     sectionGap: [72, 40, 180, 4],
     groupGap: [48, 24, 120, 4],
     textGap: [12, 4, 28, 1],
@@ -70,6 +71,34 @@ const RACHEL = {
   },
   space: { columnWidth: 688, sectionGap: 72, groupGap: 48, textGap: 8, mediaGap: 64 },
   surfaces: { pageBackground: "#ffffff", media: "flush", panelFill: "#fafafa", panelPadding: 0, cornerRadius: 0 },
+};
+
+/**
+ * Christina Raganit's case-study pages, measured in the browser (christinaraganit.xyz/figma-live-comments):
+ * a near-black page with soft off-white text, 15px body at 400 weight with 23.3px lines, headings in a
+ * display face at 26px (subheads 19px, title 34px) at regular weight, small grey mono labels, a wide
+ * 927px column where text often sits in a half-width column, flush media with 4px corners, tight
+ * heading-to-text spacing (13px) and long pauses between blocks (about 86px).
+ */
+const CHRISTINA = {
+  type: {
+    bodySize: 15,
+    bodyWeight: "400",
+    bodyTracking: 0,
+    lineHeight: 23.5,
+    bodyColor: "#c5bfc2",
+    inkColor: "#f4eff1",
+    headingSize: 26,
+    headingFont: "sans",
+    headingWeight: "400",
+    headingTracking: 0.0025,
+    subheadSize: 19,
+    titleSize: 34,
+    eyebrowLook: "neutral",
+    eyebrowCaps: false,
+  },
+  space: { columnWidth: 927, sectionGap: 88, groupGap: 64, textGap: 13, mediaGap: 44 },
+  surfaces: { pageBackground: "#110e0f", media: "flush", panelFill: "#1c1819", panelPadding: 0, cornerRadius: 4 },
 };
 
 /**
@@ -130,6 +159,7 @@ export default function CaseDials() {
     persist: true,
     onAction: (path) => {
       if (path.endsWith("rachel")) ref.current?.setValues(RACHEL);
+      if (path.endsWith("christina")) ref.current?.setValues(CHRISTINA);
       if (path.endsWith("emmi")) ref.current?.setValues(EMMI);
       if (path.endsWith("old")) ref.current?.setValues(OLD);
       if (path.endsWith("reset")) ref.current?.resetValues();
@@ -153,6 +183,9 @@ export default function CaseDials() {
     set(article, "--t-body-lh", `${d.type.lineHeight}px`);
     set(root, "--body", d.type.bodyColor);
     set(root, "--ink", d.type.inkColor);
+    // Emphasised body text sits between ink and body, so it stays readable on dark pages too.
+    set(root, "--body-strong", `color-mix(in srgb, ${d.type.inkColor} 60%, ${d.type.bodyColor})`);
+    set(article, "--next-card-bg", `color-mix(in srgb, ${d.surfaces.pageBackground} 96%, ${d.type.inkColor})`);
     set(article, "--t-h-size", `${d.type.headingSize}px`);
     set(article, "--t-h-font", d.type.headingFont === "serif" ? "var(--font-serif)" : "inherit");
     set(article, "--t-h-weight", d.type.headingFont === "serif" ? "300" : d.type.headingWeight);
@@ -187,11 +220,11 @@ export default function CaseDials() {
         "--t-h-weight", "--t-h-track", "--t-sub-size", "--t-display-size", "--eyebrow-color", "--eyebrow-case",
         "--eyebrow-track", "--eyebrow-size", "--cs-col", "--cs-gap-section", "--cs-gap-group",
         "--cs-gap-text", "--cs-gap-media", "--surface", "--frame-bg", "--frame-pad", "--cs-pad",
-        "--cs-radius", "--cs-img-radius",
+        "--cs-radius", "--cs-img-radius", "--next-card-bg",
       ]) {
         article.style.removeProperty(name);
       }
-      for (const name of ["--body", "--ink", "--page-bg"]) root.style.removeProperty(name);
+      for (const name of ["--body", "--ink", "--body-strong", "--page-bg"]) root.style.removeProperty(name);
       document.body.style.removeProperty("background");
     };
   }, [d]);
