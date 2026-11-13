@@ -1,0 +1,61 @@
+name: Back up butterfly count
+
+# Once a day: read the counter from Supabase and save it to the `butterfly-backups`
+# branch. The daily request also stops a free Supabase project from being paused for
+# inactivity. If Supabase can't be reached or the number looks wrong, this job fails
+# and GitHub emails you.
+
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read the count
+        id: read
+        env:
+          URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: |
+          body=$(curl -sS --fail --max-time 30 "$URL/rest/v1/butterfly_counter?id=eq.1&select=count" \
+            -H "apikey: $KEY" -H "Authorization: Bearer $KEY")
+          count=$(echo "$body" | jq -er '.[0].count')
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+          echo "Count is $count"
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Save it to the backups branch
+        env:
+          COUNT: ${{ steps.read.outputs.count }}
+        run: |
+          git config user.name "butterfly-backup"
+          git config user.email "butterfly-backup@users.noreply.github.com"
+          if git ls-remote --exit-code --heads origin butterfly-backups >/dev/null 2>&1; then
+            git fetch origin butterfly-backups
+            git checkout butterfly-backups
+          else
+            git checkout --orphan butterfly-backups
+            git rm -rf . >/dev/null 2>&1 || true
+          fi
+          now=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          prev=$(jq -r '.count // 0' butterfly-count.json 2>/dev/null || echo 0)
+          # Never overwrite a higher saved number with a lower one: a drop means something went wrong.
+          if [ "$COUNT" -lt "$prev" ]; then
+            echo "::error::Counter dropped from $prev to $COUNT. Not overwriting the backup. Check Supabase."
+            exit 1
+          fi
+          echo "{\"count\": $COUNT, \"savedAt\": \"$now\"}" > butterfly-count.json
+          [ -f history.csv ] || echo "savedAt,count" > history.csv
+          echo "$now,$COUNT" >> history.csv
+          git add butterfly-count.json history.csv
+          git commit -m "Butterfly count $COUNT ($now)" || echo "nothing to commit"
+          git push origin butterfly-backups

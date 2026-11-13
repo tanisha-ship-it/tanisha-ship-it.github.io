@@ -1,3 +1,5 @@
+import { BUTTERFLY_FLOOR } from "./butterfly-floor";
+
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
 
@@ -13,10 +15,28 @@ export async function getButterflyCount(): Promise<number> {
       { headers, cache: "no-store" },
     );
     const data = await res.json();
-    return data[0]?.count ?? 0;
+    const count = data[0]?.count;
+    // A missing or reset counter never shows less than the last saved number.
+    return typeof count === "number" ? Math.max(count, BUTTERFLY_FLOOR) : BUTTERFLY_FLOOR;
   } catch {
-    return 0;
+    return BUTTERFLY_FLOOR;
   }
+}
+
+/** If the table was reset, put it back above the floor so the next number written is not a low one. */
+async function liftToFloor(count: number): Promise<number> {
+  if (count >= BUTTERFLY_FLOOR) return count;
+  const lifted = BUTTERFLY_FLOOR + count;
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/butterfly_counter?id=eq.1`, {
+      method: "PATCH",
+      headers: { ...headers, "Content-Type": "application/json", Prefer: "return=minimal" },
+      body: JSON.stringify({ count: lifted }),
+    });
+  } catch {
+    // The display still uses the lifted number; the next visitor will retry.
+  }
+  return lifted;
 }
 
 /**
@@ -37,9 +57,9 @@ export async function incrementButterflyCount(): Promise<number> {
       const text = await rpcRes.text();
       if (text) {
         const data = JSON.parse(text);
-        if (typeof data === "number") return data;
+        if (typeof data === "number") return liftToFloor(data);
         if (typeof data?.[0]?.increment_butterfly_count === "number") {
-          return data[0].increment_butterfly_count;
+          return liftToFloor(data[0].increment_butterfly_count);
         }
       }
       // RPC succeeded but returned no body (e.g. Prefer: return=minimal) —
@@ -50,7 +70,7 @@ export async function incrementButterflyCount(): Promise<number> {
     // RPC unreachable — fall through to the non-atomic path below.
   }
 
-  const current = await getButterflyCount();
+  const current = await getButterflyCount(); // already at least the floor
   const newCount = current + 1;
   await fetch(`${SUPABASE_URL}/rest/v1/butterfly_counter?id=eq.1`, {
     method: "PATCH",
