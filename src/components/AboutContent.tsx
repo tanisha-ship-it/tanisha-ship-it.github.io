@@ -15,6 +15,7 @@ const SOCIALS = [
   { label: "Twitter", href: "https://x.com/moonsrabbit7" },
   { label: "Linkedin", href: "https://www.linkedin.com/in/tanisha-raghav-0b3a3b1b4/" },
   { label: "Instagram", href: "https://www.instagram.com/tanishasbrainpickings/" },
+  { label: "GitHub", href: "https://github.com/TRaghav24" },
 ];
 
 const PHOTOS = ["Tnk2u8Kd7Ux0UyLuAV8LFift18", "2ooXPjbk50vMB5hJAUpwIuG7to", "CoLkpcLvJ061qYq96dyLnaeEfU8"];
@@ -86,7 +87,7 @@ export function AboutContent({ title = "Hey, I'm Tanisha :)" }: { title?: string
 
       <section className="mt-[72px]">
         <h2 className="t-sub">Say hello</h2>
-        <div className="mt-3 grid grid-cols-3 gap-2.5">
+        <div className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
           {SOCIALS.map((s) => (
             <a
               key={s.label}
@@ -98,7 +99,7 @@ export function AboutContent({ title = "Hey, I'm Tanisha :)" }: { title?: string
               <Img
                 id="i5KwlHxnC8AAQIMMpygMJRU00"
                 thumb
-                className="w-[124px] transition-transform duration-300 group-hover:-translate-y-1 group-hover:rotate-6"
+                className="w-full max-w-[124px] transition-transform duration-300 group-hover:-translate-y-1 group-hover:rotate-6"
               />
               <span className="t-sm -mt-3">{s.label}</span>
             </a>
